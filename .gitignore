@@ -1,0 +1,30 @@
+.idea
+
+# Gradle
+.gradle/
+build/
+out/
+
+# IDEs / editors
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# OS files
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Docker
+*.pid
+
+# Spring Boot
+*.jar
+*.war
+
+# Keycloak / db data (docker volume dirs, if you ever create them locally)
+keycloak/
+postgres-data/
