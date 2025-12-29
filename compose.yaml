@@ -3,15 +3,21 @@ services:
     build: .
     container_name: auth-service
     depends_on:
-      - keycloak
-      - postgres
+      keycloak:
+        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: auth-service
-      # Example values — replace `your-realm` with your realm name
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://keycloak:8080/realms/wedance"
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://keycloak:8080/realms/wedance/protocol/openid-connect/certs"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://keycloak:8080/realms/motionary"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://keycloak:8080/realms/motionary/protocol/openid-connect/certs"
+      # Keycloak configuration
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: motionary
+      KEYCLOAK_CLIENT_ID: motionary
+      KEYCLOAK_CLIENT_SECRET: ""
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - "8080:8080"
+      - "8082:8080"
     networks:
       - auth-network
 
@@ -38,24 +44,28 @@ services:
     image: quay.io/keycloak/keycloak:26.0
     container_name: keycloak
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     command: ["start-dev"]
     environment:
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: admin
+      # Fixed: Correct environment variable names for Keycloak 26.0
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
       KC_DB_URL_DATABASE: keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
       KC_HTTP_PORT: 8080
+      KC_HEALTH_ENABLED: true
     ports:
       - "8081:8080"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 30s
     networks:
       - auth-network
 
@@ -64,4 +74,5 @@ volumes:
 
 networks:
   auth-network:
+    name: shared-auth-network
     driver: bridge

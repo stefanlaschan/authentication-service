@@ -1,4 +1,4 @@
-package com.wedance.authservice.dto;
+package com.motionary.authservice.dto;
 
 public class LoginRequest {
     private String username;

@@ -1,4 +1,4 @@
-package com.wedance.authservice.dto;
+package com.motionary.authservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,9 +1,10 @@
-package com.wedance.authservice.controller;
+package com.motionary.authservice.controller;
 
-import com.wedance.authservice.dto.AuthResponse;
-import com.wedance.authservice.dto.LoginRequest;
-import com.wedance.authservice.dto.SignupRequest;
-import com.wedance.authservice.service.KeycloakService;
+import com.motionary.authservice.dto.AuthResponse;
+import com.motionary.authservice.dto.LoginRequest;
+import com.motionary.authservice.dto.LogoutRequest;
+import com.motionary.authservice.dto.SignupRequest;
+import com.motionary.authservice.service.KeycloakService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,5 +26,11 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
         AuthResponse token = kc.login(req);
         return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequest req) {
+        kc.logout(req.getRefreshToken());
+        return ResponseEntity.noContent().build();
     }
 }
